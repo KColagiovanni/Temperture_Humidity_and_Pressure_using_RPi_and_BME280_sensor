@@ -1,8 +1,6 @@
 SECRETS:
-  SSID: <network ssid>
   MQTT_SERVER: <ip address of mqtt server(pc running MQTT server>
   CLIENT_NAME: <mqtt client name (can be anything)>
   MQTT_PORT: <mqtt port (default is 1883)>
   T1: <mqtt topic 1(Ex. home>
   T2: <mqtt topic 2(Ex. livingroom>
-  INTERFACE: <wireless/wired name (use ifconfig to find interface names)>
