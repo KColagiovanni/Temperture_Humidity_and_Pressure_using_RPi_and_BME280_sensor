@@ -18,22 +18,34 @@ def config(file_path):
 config = config('/home/kevin/Desktop/pi_config.yaml')
 
 ########## Config Stuff #############
-ssid = config['SECRETS']['SSID']
 mqtt_server = config['SECRETS']['MQTT_SERVER']
 client_name = config['SECRETS']['CLIENT_NAME']
 mqtt_port = config['SECRETS']['MQTT_PORT']
 t1 = config['SECRETS']['T1']
 t2 = config['SECRETS']['T2']
-interface = config['SECRETS']['INTERFACE']
 #####################################
 
+# MQTT Setup
 lwt = f'The {client_name} is Offline'
-start_time = datetime.datetime.now()
-#rssi_scanner = rssi.RSSI_Scan(interface)
-DEVICE = 0x76 # Default device I2C address
 client = mqtt.Client(client_name)
-BUS = smbus2.SMBus(1)
 mqtt.Client.connected_flag = False
+client.on_connect = on_connect
+client.on_disconnect = on_disconnect
+client.loop_start()
+
+wait = ''
+
+# BME280 Sensor Setup
+DEVICE = 0x76 # Default device I2C address
+BUS = smbus2.SMBus(1)
+
+# Raspberry Pi GPIO Setup
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(motion_pin, GPIO.IN)
+
+# Define when the program started to be used for elapsed time.
+start_time = datetime.datetime.now()
 
 count = 0
 temp_day_count = 0
@@ -75,11 +87,7 @@ min_r_today = -100
 motion_pin = 32
 motion_count = 0
 
-def on_publish(topic, payload = None, qos = 0, retained = False):
-    if topic == f'{t1}/{t2}/motion':
-        print(f'topic: {topic}')
-        print(f'payload: {payload}')
-
+# 
 def on_connect(client, userdata, flags, rc):
     print('Setting up MQTT...')
     print(f'Connected flags {flags}. Return code {rc} client_id')
@@ -98,7 +106,7 @@ def on_disconnect(client, userdata, rc):
         client.connected_flag = False
         print(f'Not Connected to MQTT Server. Return code: {rc}')
         try:
-            mqtt_conn = client.connect(mqtt_server, mqtt_port, keepalive = 60)#RP5180
+            mqtt_conn = client.connect(mqtt_server, mqtt_port, keepalive = 60)
         except OSError as e:
             print(e)
     else:
@@ -403,49 +411,24 @@ def calcMinRssiToday(rssi):
     print(f'Min RSSI Today: {min_r_today}dBm')
     client.publish(f'{t1}/{t2}/minRssiToday', min_r_today)
 
-def motion_counter():
-    print(f'Motion Count: {motion_count}')
-    client.publish(f'{t1}/{t2}/motionCount', motion_count)
-
-def motion():
-    global motion_count
-    if GPIO.input(motion_pin) == 1:
-        motion_count += 1
-        print(f'\nmotion has been detected ({motion_count})')
-        client.publish(f'{t1}/{t2}/motion', 'motion')
-        return True
-
 last_will_msg()
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(motion_pin, GPIO.IN)
-client.on_connect = on_connect
-client.on_disconnect = on_disconnect
-#client.on_publish = on_publish
-client.loop_start()
-
-wait = ''
-# while not client.connected_flag:
-#     wait += '.'
-#     print(wait)
-#     time.sleep(1)
-#     mqtt_conn = client.connect(mqtt_server, mqtt_port, keepalive = 60)#RP5180
 
 try:
-    mqtt_conn = client.connect(mqtt_server, mqtt_port, keepalive = 60)#RP5180
+    mqtt_conn = client.connect(mqtt_server, mqtt_port, keepalive = 60)
 except OSError as e:
     print(e)
 
 while True:
 
-    print(f'Client Connected: {client.connected_flag}')
+    print(f'MQTT Connection Status: {client.connected_flag}')
     
+ 
     if not client.connected_flag:
         wait += '.'
         print(wait)
         time.sleep(1)
         try:
-            mqtt_conn = client.connect(mqtt_server, mqtt_port, keepalive = 60)#RP5180
+            mqtt_conn = client.connect(mqtt_server, mqtt_port, keepalive = 60)
         except OSError as e:
             print(e)
 
@@ -489,15 +472,8 @@ while True:
             calcMinRssi(r)
             calcMinRssiToday(r)
             motion_counter()
-        #    time.sleep(60)
+            time.sleep(60)
 
-            motion_timer = 0
-            while motion_timer < 120:
-                if motion():
-                    motion_timer += 6
-                    time.sleep(3)
-                time.sleep(.5)
-                motion_timer += 1
-
+        # Reset the Raspberry Pi if there is an OS Error thrown, which caused it to freeze after a few weeks.
         except OSError:
             subprocess.call('sudo shutdown', shell=True)
