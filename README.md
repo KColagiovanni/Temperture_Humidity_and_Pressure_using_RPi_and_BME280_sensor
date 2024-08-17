@@ -18,7 +18,7 @@ Nice to Have:
 ### Setup:
 - #### Wiring:
   * Note: The bread board rows are shorted together on the right(columns a-e) and left(columns f-j) sides.
-  * ESP32 pressed into the bread board. <---------------
+  * Raspberry Pi with GPIO Extension module installed and plugged into the breasboard. 
   * BME280 pressed into the breadboard with all of the pins in the same column.
      * Jumper wire from the pin labeled D21(SDA) on the ESP to SDA on the BME sensor.
      * Jumper wire from the pin labeled D22(SCL) on the ESP to SCL on the BME sensor.
