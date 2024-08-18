@@ -2,10 +2,10 @@
 
 ### Description:
 This program was written with the intent to measure temperature, humidity, and pressure using a
-Raspberry Pi, and a BME280 Temperature, Humidity, and Pressure sensor. The program sends data to
-the serial monitor (console output) and publishes [MQTT](https://mqtt.org/) messages using 
-specific topics. A Node Red program is subscribed to all the topics that are published and it
-also sends the messages to Home Assistant.
+Raspberry Pi(RPi), and a BME280 Temperature, Humidity, and Pressure sensor. The program sends 
+data to the serial monitor (console output) and publishes [MQTT](https://mqtt.org/) messages 
+using specific topics. A Node Red program is subscribed to all the topics that are published 
+and it also sends the messages to Home Assistant.
 
 ### Parts List and Cost:
 - [Raspberry Pi 3 Kit - $59.99](https://vilros.com/products/raspberry-pi-3-complete-starter-kit-clear-case)
@@ -18,12 +18,14 @@ Nice to Have:
 ### Setup:
 - #### Wiring:
   * Note: The bread board rows are shorted together on the right(columns a-e) and left(columns f-j) sides.
-  * Raspberry Pi with GPIO Extension module installed and plugged into the breasboard. 
+  * Raspberry Pi with (Optional) GPIO Extension module installed and plugged into the breasboard. 
   * BME280 pressed into the breadboard with all of the pins in the same column.
-     * Jumper wire from the pin labeled D21(SDA) on the ESP to SDA on the BME sensor.
-     * Jumper wire from the pin labeled D22(SCL) on the ESP to SCL on the BME sensor.
-  * Jumper wire from the pin labeled 3V3 on the ESP to "+" on the BME sensor.
-  * Jumper wire from the pin lebeled GND on the ESP to "-" on the BME sensor.
+     * Jumper wire from the [Pin 3](https://www.pi4j.com/1.2/pins/model-3b-plus-rev1.html)(SDA) on the RPi to SDA on the BME sensor.
+     * Jumper wire from the [Pin 5](https://www.pi4j.com/1.2/pins/model-3b-plus-rev1.html)(SCL) on the RPi to SCL on the BME sensor.
+  * Jumper wire from the pin labeled [3V3]([Pin 3](https://www.pi4j.com/1.2/pins/model-3b-plus-rev1.html)) on the RPi to "+" on the BME sensor.
+  * Jumper wire from the pin lebeled [GND]([Pin 3](https://www.pi4j.com/1.2/pins/model-3b-plus-rev1.html)) on the RPi to "-" on the BME sensor.
+
+#### Under Consruction(Not built yet):
   * [Optional] If using an LED to show when MQTT is connected:
      * The long side of the LED goes to GPIO 5 of the ESP32.
      * Connect the short side of the LED to one leg of the 1K Ohm resistor (both connected to the same row in the breadboard (Columns a-e or f-j)).
