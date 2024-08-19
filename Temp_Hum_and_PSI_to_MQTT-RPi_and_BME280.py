@@ -8,43 +8,6 @@ import subprocess
 import rssi
 import yaml
 
-def config(file_path):
-    with open(file_path, 'r') as f:
-        print('Config Successful')
-        return yaml.safe_load(f)
-
-config = config('/home/kevin/Desktop/pi_config.yaml')
-
-########## Config Stuff #############
-mqtt_server = config['SECRETS']['MQTT_SERVER']
-client_name = config['SECRETS']['CLIENT_NAME']
-mqtt_port = config['SECRETS']['MQTT_PORT']
-t1 = config['SECRETS']['T1']
-t2 = config['SECRETS']['T2']
-#####################################
-
-# MQTT Setup
-lwt = f'The {client_name} is Offline'
-client = mqtt.Client(client_name)
-mqtt.Client.connected_flag = False
-client.on_connect = on_connect
-client.on_disconnect = on_disconnect
-client.loop_start()
-
-wait = ''
-
-# BME280 Sensor Setup
-DEVICE = 0x76 # Default device I2C address
-BUS = smbus2.SMBus(1)
-
-# Raspberry Pi GPIO Setup
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(motion_pin, GPIO.IN)
-
-# Define when the program started to be used for elapsed time.
-start_time = datetime.datetime.now()
-
 count = 0
 temp_day_count = 0
 hum_day_count = 0
@@ -82,8 +45,7 @@ max_rssi = 100
 max_r_today = 100
 min_rssi = -100
 min_r_today = -100
-motion_pin = 32
-motion_count = 0
+wait = ''
 
 # 
 def on_connect(client, userdata, flags, rc):
@@ -409,69 +371,110 @@ def calcMinRssiToday(rssi):
     print(f'Min RSSI Today: {min_r_today}dBm')
     client.publish(f'{t1}/{t2}/minRssiToday', min_r_today)
 
+
+def config(file_path):
+    with open(file_path, 'r') as f:
+        print('Config Successful')
+        return yaml.safe_load(f)
+
+config = config('~/Desktop/pi_config.yaml')
+
+########## Config Stuff #############
+mqtt_server = config['SECRETS']['MQTT_SERVER']
+client_name = config['SECRETS']['CLIENT_NAME']
+mqtt_port = config['SECRETS']['MQTT_PORT']
+t1 = config['SECRETS']['T1']
+t2 = config['SECRETS']['T2']
+#####################################
+
+# MQTT Setup
+lwt = f'The {client_name} is Offline'
+client = mqtt.Client(client_name)
+mqtt.Client.connected_flag = False
+client.on_connect = on_connect
+client.on_disconnect = on_disconnect
+client.loop_start()
+
+# BME280 Sensor Setup
+DEVICE = 0x76 # Default device I2C address
+BUS = smbus2.SMBus(1)
+
+# Raspberry Pi GPIO Setup
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BOARD)
+
+# Define when the program started to be used for elapsed time.
+start_time = datetime.datetime.now()
+
 last_will_msg()
 
-try:
-    mqtt_conn = client.connect(mqtt_server, mqtt_port, keepalive = 60)
-except OSError as e:
-    print(e)
+def main():
 
-while True:
+    try:
+        mqtt_conn = client.connect(mqtt_server, mqtt_port, keepalive = 60)
 
-    print(f'MQTT Connection Status: {client.connected_flag}')
+    except OSError as e:
+        print(e)
+
+    while True:
+
+        print(f'MQTT Connection Status: {client.connected_flag}')
+        
     
- 
-    if not client.connected_flag:
-        wait += '.'
-        print(wait)
-        time.sleep(1)
-        try:
-            mqtt_conn = client.connect(mqtt_server, mqtt_port, keepalive = 60)
-        except OSError as e:
-            print(e)
+        if not client.connected_flag:
+            wait += '.'
+            print(wait)
+            time.sleep(1)
+            try:
+                mqtt_conn = client.connect(mqtt_server, mqtt_port, keepalive = 60)
+            except OSError as e:
+                print(e)
 
-    else:
-        try:
-            bme_data = bme280.sample(BUS, DEVICE)
-            count += 1
-            print()
-            print()
-            cycleCounter()
-            day()
-            elapsed_time()
-            date()
-            timeOfDay()
-            t = temp()
-            calcAvgTemp(t)
-            calcAvgTempToday(t)
-            calcMaxTemp(t)
-            calcMaxTempToday(t)
-            calcMinTemp(t)
-            calcMinTempToday(t)
-            h  = hum()
-            calcAvgHum(h)
-            calcAvgHumToday(h)
-            calcMaxHum(h)
-            calcMaxHumToday(h)
-            calcMinHum(h)
-            calcMinHumToday(h)
-            p = psi()
-            calcAvgPsi(p)
-            calcAvgPsiToday(p)
-            calcMaxPSI(p)
-            calcMaxPsiToday(p)
-            calcMinPSI(p)
-            calcMinPsiToday(p)
-            r = rssi()
-            calcAvgRssi(r)
-            calcAvgRssiToday(r)
-            calcMaxRssi(r)
-            calcMaxRssiToday(r)
-            calcMinRssi(r)
-            calcMinRssiToday(r)
-            motion_counter()
-            time.sleep(60)
+        else:
+            try:
+                bme_data = bme280.sample(BUS, DEVICE)
+                count += 1
+                print()
+                print()
+                cycleCounter()
+                day()
+                elapsed_time()
+                date()
+                timeOfDay()
+                t = temp()
+                calcAvgTemp(t)
+                calcAvgTempToday(t)
+                calcMaxTemp(t)
+                calcMaxTempToday(t)
+                calcMinTemp(t)
+                calcMinTempToday(t)
+                h  = hum()
+                calcAvgHum(h)
+                calcAvgHumToday(h)
+                calcMaxHum(h)
+                calcMaxHumToday(h)
+                calcMinHum(h)
+                calcMinHumToday(h)
+                p = psi()
+                calcAvgPsi(p)
+                calcAvgPsiToday(p)
+                calcMaxPSI(p)
+                calcMaxPsiToday(p)
+                calcMinPSI(p)
+                calcMinPsiToday(p)
+                r = rssi()
+                calcAvgRssi(r)
+                calcAvgRssiToday(r)
+                calcMaxRssi(r)
+                calcMaxRssiToday(r)
+                calcMinRssi(r)
+                calcMinRssiToday(r)
+                time.sleep(60)
 
-        # Reset the Raspberry Pi if there is an OS Error thrown, which caused it to freeze after a few weeks.
-        except OSError:
-            subprocess.call('sudo shutdown', shell=True)
+            # Reset the Raspberry Pi if there is an OS Error thrown, which caused it to freeze after a few weeks.
+            except OSError:
+                subprocess.call('sudo shutdown', shell=True)
+
+# Call the main function
+if __name__ == '__main__':
+    main()
