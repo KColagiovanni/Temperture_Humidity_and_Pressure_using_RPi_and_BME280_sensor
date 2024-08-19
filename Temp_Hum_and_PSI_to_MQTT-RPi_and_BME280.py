@@ -4,9 +4,7 @@ import datetime
 import time
 import paho.mqtt.client as mqtt
 import bme280
-import sys
 import subprocess
-import os
 import rssi
 import yaml
 
