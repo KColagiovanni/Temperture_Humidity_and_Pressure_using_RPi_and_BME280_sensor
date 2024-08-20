@@ -47,7 +47,7 @@ min_rssi = -100
 min_r_today = -100
 wait = ''
 
-# 
+# This function is called when this client is connected to the MQTT server.
 def on_connect(client, userdata, flags, rc):
     print('Setting up MQTT...')
     print(f'Connected flags {flags}. Return code {rc} client_id')
@@ -58,6 +58,7 @@ def on_connect(client, userdata, flags, rc):
     else:
         print(f'Not Connected to MQTT Server. Return code: {rc}')
 
+# This function is called when this client is disconnected from the MQTT server.
 def on_disconnect(client, userdata, rc):
     print('MQTT Disconnected...')
     print(f'Return code {rc}')
@@ -72,35 +73,41 @@ def on_disconnect(client, userdata, rc):
     else:
         print(f'Connected to MQTT Server. Return code: {rc}')
 
+# This function will define and set the last will and testament message.
 def last_will_msg():
     print(f'Setting last will message to "{lwt}"')
     client.will_set(f'{t1}/{t2}/lwt', lwt, qos = 1, retain = False)
 
+# This function will publish the current day of the week.
 def day():
     day = datetime.datetime.now().strftime("%A")
     print(f'Day of the Week: {day}')
     client.publish(f'{t1}/{t2}/day', day)
 
+# This function will publish the elapsed time since the program was started.
 def elapsed_time():
     elapsed_time_since_start = str(datetime.datetime.now() - start_time)
     print(f'Elapsed time: {elapsed_time_since_start[:-10]}')
     client.publish(f'{t1}/{t2}/elapsedTime', elapsed_time_since_start[:-10])
-#    return elapsed_time_since_start
 
+# This function will publish the date in MM/DD/YYYY format.
 def date():
     date = datetime.datetime.now().strftime('%m/%d/%Y')
     print(f'Date: {date}')
     client.publish(f'{t1}/{t2}/date', date)
 
+# This function will publish the current time.
 def timeOfDay():
     time = datetime.datetime.now().strftime('%H:%M:%S')
     print(f'Time of Day: {time}')
     client.publish(f'{t1}/{t2}/time', time)
 
+# This function will publish the number of times(cycles) the program has ran.
 def cycleCounter():
     print(f'Cycle Counter: {count}')
     client.publish(f'{t1}/{t2}/dataPts', count)
     
+# This function will get, publish, and return the temperature, in Fahrenheit.
 def temp():
     temperature = bme_data.temperature
     temperature = (temperature * 9 / 5) + 32
@@ -109,6 +116,7 @@ def temp():
     client.publish(f'{t1}/{t2}/temp', t)
     return t
 
+# This function will take the temperature as a parameter, then calculate, publish, and return the average temperature. 
 def calcAvgTemp(t):
     global avg_t_plus_t
     global avg_t
@@ -121,6 +129,7 @@ def calcAvgTemp(t):
     client.publish(f'{t1}/{t2}/avgTemp', avg_t)
     return avg_t
 
+# This function will take the temperature as a parameter, then calculate, publish, and return the average temperature of the current day.
 def calcAvgTempToday(t):
     global avg_t_plus_t_today
     global avg_t_today
@@ -137,12 +146,14 @@ def calcAvgTempToday(t):
     client.publish(f'{t1}/{t2}/avgTempToday', avg_t_today)
     return avg_t_today
 
+# This function will take the temperature as a parameter, then calculate and publish the maximum temperature. 
 def calcMaxTemp(t):
     global max_t
     max_t = max(max_t, t)
     print(f'Max Temperature: {max_t}F')
     client.publish(f'{t1}/{t2}/maxTemp', max_t)
     
+# This function will take the temperature as a parameter, then calculate and publish todays maximum temperature. 
 def calcMaxTempToday(t):
     global max_t_today
     if datetime.datetime.now().strftime("%H") == '00' and datetime.datetime.now().strftime("%M") == '00':
@@ -152,12 +163,14 @@ def calcMaxTempToday(t):
     print(f'Max Temperature Today: {max_t_today}F')
     client.publish(f'{t1}/{t2}/maxTempToday', max_t_today)
     
+# This function will take the temperature as a parameter, then calculate and publish the minimum temperature. 
 def calcMinTemp(t):
     global min_t
     min_t = min(min_t, t)
     print(f'Min Temperature: {min_t}F')         
     client.publish(f'{t1}/{t2}/minTemp', min_t)
 
+# This function will take the temperature as a parameter, then calculate and publish todays minimum temperature. 
 def calcMinTempToday(t):
     global min_t_today
     if datetime.datetime.now().strftime("%H") == '00' and datetime.datetime.now().strftime("%M") == '00':
@@ -167,6 +180,7 @@ def calcMinTempToday(t):
     print(f'Min Temperature Today: {min_t_today}F')
     client.publish(f'{t1}/{t2}/minTempToday', min_t)
     
+# This function will get, publish, and return the humidity.
 def hum():
     humidity = bme_data.humidity
     h = round(humidity, 2)
@@ -174,6 +188,7 @@ def hum():
     client.publish(f'{t1}/{t2}/hum', h)
     return h
 
+# This function will take the humidity as a parameter, then calculate, publish, and return the average humidity. 
 def calcAvgHum(h):
     global avg_h_plus_h
     global avg_h
@@ -186,6 +201,7 @@ def calcAvgHum(h):
     client.publish(f'{t1}/{t2}/avgHum', avg_h)
     return avg_h
 
+# This function will take the humidity as a parameter, then calculate, publish, and return todays average humidity. 
 def calcAvgHumToday(h):
     global avg_h_plus_h_today
     global avg_h_today
@@ -202,12 +218,14 @@ def calcAvgHumToday(h):
     client.publish(f'{t1}/{t2}/avgHumToday', avg_h_today)
     return avg_h_today
 
+# This function will take the humidity as a parameter, then calculate and publish the maximum humidity. 
 def calcMaxHum(h):
     global max_h
     max_h = max(max_h, h)
     print(f'Max Humidity: {max_h}%')
     client.publish(f'{t1}/{t2}/maxHum', max_h)
 
+# This function will take the humidity as a parameter, then calculate and publish todays maximum humidity. 
 def calcMaxHumToday(h):
     global max_h_today
     if datetime.datetime.now().strftime("%H") == '00' and datetime.datetime.now().strftime("%M") == '00':
@@ -217,12 +235,14 @@ def calcMaxHumToday(h):
     print(f'Max Humiduty Today: {max_h_today}%')
     client.publish(f'{t1}/{t2}/maxHumToday', max_h_today)
     
+# This function will take the humidity as a parameter, then calculate and publish the minimum humidity. 
 def calcMinHum(h):
     global min_h
     min_h = min(min_h, h)
     print(f'Min Humidity: {min_h}%')        
     client.publish(f'{t1}/{t2}/minHum', min_h)
 
+# This function will take the humidity as a parameter, then calculate and publish todays maximum humidity. 
 def calcMinHumToday(h):
     global min_h_today
     if datetime.datetime.now().strftime("%H") == '00' and datetime.datetime.now().strftime("%M") == '00':
@@ -232,6 +252,7 @@ def calcMinHumToday(h):
     print(f'Min Humidity Today: {min_h_today}%')
     client.publish(f'{t1}/{t2}/minHumToday', min_h)
     
+# This function will get, publish, and return the pressure.
 def psi():
     pressure = bme_data.pressure
     p = round(pressure, 2)
@@ -239,6 +260,7 @@ def psi():
     client.publish(f'{t1}/{t2}/psi', p)
     return p
 
+# This function will take the pressure as a parameter, then calculate, publish, and return the average pressure. 
 def calcAvgPsi(p):
     global avg_p_plus_p
     global avg_p
@@ -251,6 +273,7 @@ def calcAvgPsi(p):
     client.publish(f'{t1}/{t2}/avgPsi', avg_p)
     return avg_p
 
+# This function will take the pressure as a parameter, then calculate, publish, and return todays average pressure. 
 def calcAvgPsiToday(p):
     global avg_p_plus_p_today
     global avg_p_today
@@ -267,12 +290,14 @@ def calcAvgPsiToday(p):
     client.publish(f'{t1}/{t2}/avgPsiToday', avg_p_today)
     return avg_p_today
 
+# This function will take the pressure as a parameter, then calculate and publish the maximum pressure. 
 def calcMaxPSI(p):
     global max_p
     max_p = max(max_p, p)
     print(f'Max Pressure: {max_p}hPa')
     client.publish(f'{t1}/{t2}/maxPsi', max_p)
     
+# This function will take the pressure as a parameter, then calculate and publish todays maximum pressure. 
 def calcMaxPsiToday(p):
     global max_p_today
     if datetime.datetime.now().strftime("%H") == '00' and datetime.datetime.now().strftime("%M") == '00':
@@ -282,12 +307,14 @@ def calcMaxPsiToday(p):
     print(f'Max Pressure Today: {max_p_today}hPa')
     client.publish(f'{t1}/{t2}/maxPsiToday', max_p_today)
     
+# This function will take the pressure as a parameter, then calculate and publish the minimum pressure. 
 def calcMinPSI(p):
     global min_p
     min_p = min(min_p, p)
     print(f'Min Pressure: {min_p}hPa')
     client.publish(f'{t1}/{t2}/minPsi', min_p)
 
+# This function will take the pressure as a parameter, then calculate and publish todays minimum pressure. 
 def calcMinPsiToday(p):
     global min_p_today
     if datetime.datetime.now().strftime("%H") == '00' and datetime.datetime.now().strftime("%M") == '00':
@@ -297,6 +324,7 @@ def calcMinPsiToday(p):
     print(f'Min Pressure Today: {min_p_today}hPa')
     client.publish(f'{t1}/{t2}/minPsiToday', min_p_today)
     
+# This function will get, publish, and return the rssi.
 def rssi():
     command = 'iw wlan0 station dump | grep signal'
     try:
@@ -313,6 +341,7 @@ def rssi():
         client.publish(f'{t1}/{t2}/rssi', dbm)
     return int(dbm)
 
+# This function will take the rssi as a parameter, then calculate, publish, and return the average rssi. 
 def calcAvgRssi(rssi):
     global avg_rssi_plus_rssi
     global avg_rssi
@@ -325,6 +354,7 @@ def calcAvgRssi(rssi):
     client.publish(f'{t1}/{t2}/avgRssi', avg_rssi)
     return avg_rssi
 
+# This function will take the rssi as a parameter, then calculate, publish, and return todays average rssi. 
 def calcAvgRssiToday(rssi):
     global avg_r_plus_r_today
     global avg_r_today
@@ -341,12 +371,14 @@ def calcAvgRssiToday(rssi):
     client.publish(f'{t1}/{t2}/avgRssiToday', avg_r_today)
     return avg_r_today
 
+# This function will take the rssi as a parameter, then calculate and publish the maximum rssi. 
 def calcMaxRssi(rssi):
     global max_rssi
     max_rssi = min(max_rssi, rssi)
     print(f'Max RSSI: {max_rssi}dBm')
     client.publish(f'{t1}/{t2}/maxRssi', max_rssi)
     
+# This function will take the rssi as a parameter, then calculate and publish todays maximum rssi. 
 def calcMaxRssiToday(rssi):
     global max_r_today
     if datetime.datetime.now().strftime("%H") == '00' and datetime.datetime.now().strftime("%M") == '00':
@@ -356,12 +388,14 @@ def calcMaxRssiToday(rssi):
     print(f'Max RSSI Today: {max_r_today}dBm')
     client.publish(f'{t1}/{t2}/maxRssiToday', max_r_today)
     
+# This function will take the rssi as a parameter, then calculate and publish the minimum rssi. 
 def calcMinRssi(rssi):
     global min_rssi
     min_rssi = max(min_rssi, rssi)
     print(f'Min RSSI: {min_rssi}dBm')
     client.publish(f'{t1}/{t2}/minRssi', min_rssi)
 
+# This function will take the rssi as a parameter, then calculate and publish todays minimum rssi. 
 def calcMinRssiToday(rssi):
     global min_r_today
     if datetime.datetime.now().strftime("%H") == '00' and datetime.datetime.now().strftime("%M") == '00':
@@ -371,7 +405,7 @@ def calcMinRssiToday(rssi):
     print(f'Min RSSI Today: {min_r_today}dBm')
     client.publish(f'{t1}/{t2}/minRssiToday', min_r_today)
 
-
+# Define the function to open the config yaml file.
 def config(file_path):
     with open(file_path, 'r') as f:
         print('Config Successful')
