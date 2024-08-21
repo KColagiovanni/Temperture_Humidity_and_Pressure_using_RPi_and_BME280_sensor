@@ -505,7 +505,8 @@ def main():
                 calcMinRssiToday(r)
                 time.sleep(60)
 
-            # Reset the Raspberry Pi if there is an OS Error thrown, which caused it to freeze after a few weeks.
+# I love you dad!
+                        # Reset the Raspberry Pi if there is an OS Error thrown, which caused it to freeze after a few weeks.
             except OSError:
                 subprocess.call('sudo shutdown', shell=True)
 
