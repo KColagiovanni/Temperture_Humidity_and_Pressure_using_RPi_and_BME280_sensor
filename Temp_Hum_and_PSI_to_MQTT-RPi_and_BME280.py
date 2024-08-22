@@ -413,13 +413,13 @@ def config(file_path):
 
 config = config('~/Desktop/pi_config.yaml')
 
-########## Config Stuff #############
+############### Config Stuff ##################
 mqtt_server = config['SECRETS']['MQTT_SERVER']
 client_name = config['SECRETS']['CLIENT_NAME']
 mqtt_port = config['SECRETS']['MQTT_PORT']
 t1 = config['SECRETS']['T1']
 t2 = config['SECRETS']['T2']
-#####################################
+###############################################
 
 # MQTT Setup
 lwt = f'The {client_name} is Offline'
@@ -437,9 +437,10 @@ BUS = smbus2.SMBus(1)
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
 
-# Define when the program started to be used for elapsed time.
+# Define when the program started, to be used for elapsed time.
 start_time = datetime.datetime.now()
 
+# Call the last will function before connecting to the MQTT server.
 last_will_msg()
 
 def main():
@@ -505,8 +506,7 @@ def main():
                 calcMinRssiToday(r)
                 time.sleep(60)
 
-# I love you dad!
-                        # Reset the Raspberry Pi if there is an OS Error thrown, which caused it to freeze after a few weeks.
+            # Reset the Raspberry Pi if there is an OS Error thrown, which caused it to freeze after a few weeks.
             except OSError:
                 subprocess.call('sudo shutdown', shell=True)
 
