@@ -20,13 +20,11 @@ Nice to Have:
   * Note: The bread board rows are shorted together on the right(columns a-e) and left(columns f-j) sides.
   * Raspberry Pi with (Optional) GPIO Extension module installed and plugged into the breasboard. 
   * BME280 pressed into the breadboard with all of the pins in the same column.
-     * Jumper wire from the [Pin 3](https://www.pi4j.com/1.2/pins/model-3b-plus-rev1.html)(SDA) on the RPi to SDA on the BME sensor.
-     * Jumper wire from the [Pin 5](https://www.pi4j.com/1.2/pins/model-3b-plus-rev1.html)(SCL) on the RPi to SCL on the BME sensor.
-  * Jumper wire from the pin labeled [3V3]([Pin 3](https://www.pi4j.com/1.2/pins/model-3b-plus-rev1.html)) on the RPi to "+" on the BME sensor.
-  * Jumper wire from the pin lebeled [GND]([Pin 3](https://www.pi4j.com/1.2/pins/model-3b-plus-rev1.html)) on the RPi to "-" on the BME sensor.
-
-#### Under Consruction(Not built yet):
-  * [Optional] If using an LED to show when MQTT is connected:
-     * The long side of the LED goes to GPIO 5 of the ESP32.
-     * Connect the short side of the LED to one leg of the 1K Ohm resistor (both connected to the same row in the breadboard (Columns a-e or f-j)).
-     * Connect the other leg of the resistor to ground(or "-" of the power supply).
+     * Jumper wire from [Pin 3](https://www.pi4j.com/1.2/pins/model-3b-plus-rev1.html) (SDA) on the RPi to SDA on the BME sensor.
+     * Jumper wire from [Pin 5](https://www.pi4j.com/1.2/pins/model-3b-plus-rev1.html) (SCL) on the RPi to SCL on the BME sensor.
+  * Jumper wire from 3V3 ([Pins 1 or 17](https://www.pi4j.com/1.2/pins/model-3b-plus-rev1.html)) on the RPi to "+" on the BME sensor.
+  * Jumper wire from GND ([Ground Pins](https://www.pi4j.com/1.2/pins/model-3b-plus-rev1.html)) on the RPi to "-" on the BME sensor.
+  * [Optional] Use an LED to show when MQTT is connected:
+     * Connect the long side of the LED to [Pin 7](https://www.pi4j.com/1.2/pins/model-3b-plus-rev1.html).
+     * Connect the short side of the LED to one legs of the 1K Ohm resistor (both connected to the same empty row in the breadboard (Columns a-e or f-j)).
+     * Connect the other leg of the resistor to GND ([Ground Pins](https://www.pi4j.com/1.2/pins/model-3b-plus-rev1.html)) on the RPi.
