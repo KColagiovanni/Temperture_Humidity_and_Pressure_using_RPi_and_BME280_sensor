@@ -55,8 +55,10 @@ def on_connect(client, userdata, flags, rc):
     if rc == 0:
         client.connected_flag = True
         print(f'Connected to MQTT Server. Return code: {rc}')
+        GPIO.output(7, GPIO.HIGH)
     else:
         print(f'Not Connected to MQTT Server. Return code: {rc}')
+        GPIO.output(7, GPIO.LOW)
 
 # This function is called when this client is disconnected from the MQTT server.
 def on_disconnect(client, userdata, rc):
@@ -66,12 +68,14 @@ def on_disconnect(client, userdata, rc):
     if rc != 0:
         client.connected_flag = False
         print(f'Not Connected to MQTT Server. Return code: {rc}')
+        GPIO.output(7, GPIO.LOW)
         try:
             mqtt_conn = client.connect(mqtt_server, mqtt_port, keepalive = 60)
         except OSError as e:
             print(e)
     else:
         print(f'Connected to MQTT Server. Return code: {rc}')
+        GPIO.output(7, GPIO.HIGH)
 
 # This function will define and set the last will and testament message.
 def last_will_msg():
@@ -435,7 +439,8 @@ BUS = smbus2.SMBus(1)
 
 # Raspberry Pi GPIO Setup
 GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BOARD)
+GPIO.setmode(GPIO.BOARD) # Refer to the pins by their pin number and not their GPIO number.
+GPIO.setup(7, GPIO.OUT)
 
 # Define when the program started, to be used for elapsed time.
 start_time = datetime.datetime.now()
